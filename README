@@ -1,0 +1,73 @@
+Il progetto e' strutturato come segue:
+
+Collezione<T>  (astratta)
+  |
+  +-ListaAstratta<T> (implemeta l'interfaccia Lista)
+     |
+     +-ListaArray<T> (implementa l'interfaccia Lista)
+        |
+	+-CollezioneOrdinata<T>
+	|  |
+	|  +-CollezioneSortata<T>
+	|
+	+-Insieme<T>
+	|  |
+	|  +-InsiemeOggetti<T>
+	|
+	+-Busta<T>
+	|
+	+-Vettore<T>
+	|  |
+	|  +-Matrice<T> (astratta)
+	|     |
+	|     +-MatriceDensa<T>
+	|     |
+	|     +-MatriceSparsa<T>
+	|
+	+-VettoreEstensibile<T>
+
+
+- La classe Collezione<T> e' astratta, e fornisce i metodi essenziali per tutte le altre classi.
+
+- L'interfaccia Lista fornisce il protocollo per ogni classe che deve essere utilizzata come lista linkata.
+Abbiamo realizzato solo una lista basata su un array, ma grazie a questa interfaccia e'possibile implementare delle liste con una struttura interna differente, ma tutte con lo stesso comportamento.
+
+- ListaAstratta<T> implementa l'interfaccia Lista, e fornisce alcuni metodi base per l'utilizzo di una lista come struttura in cui salvare gli oggetti manipolati. Ogni nuova implementazione di una lista deve estendere questa classe.
+
+- ListaArray<T> implementa l'interfaccia Lista, e utilizza un array di Object per simulare una struttura dati linkata. Fornisce metodi per inserire e prelevare un elemento T in qualunque posizione.
+
+- La CollezioneOrdinata<T> grazie all'array della ListaArray puo' facilmente mantenere l'ordine in cui sono stati inseriti gli oggetti.
+
+- La CollezioneSortata<T> ordina gli elementi in base ad un BloccoOrd che stabilisce l'ordine tra due elementi confrontati. Il BloccoOrd viene passato al costruttore. Per ogni elemento inserito, viene lanciato un algoritmo di insertion sort. Dato che tutti gli elementi presenti sono gia' ordinati (invariante) l'insertion sort risulta efficiente per un nuovo inserimento.
+Quando con cambiaOrdine() viene passato un nuovo BloccoOrd che modifica il confronto tra due elementi, tutta la collezione viene riordinata utilizzando il merge sort.
+
+- Dato che un insieme non ammette ripetizioni in Insieme<T> si inseriscono solo gli elementi che non sono gia' stati inseriti precedentemente. Sono state implementate le tipiche operazioni sugli insiemi: intersezione, unione, differenza, differenza simmetrica, test di apparteneza e l'insieme delle parti. Per realizzare il metodo parti() generiamo tutte le stringhe di bit dei numeri che vanno da 0 al numero di elementi contenuti facendo corrispondere ad ogni bit == 1 un elemento dell'insieme. Es:
+	[ 1, 2, 3 ]
+	  0  0  0     <- insieme vuoto [ , ]
+          0  0  1     <- [ 3, ]
+          0  1  0     <- [ 2, ]
+          0  1  1     <- [ 2, 3, ]
+          1  0  0     <- [ 1, ]
+          1  0  1     <- [ 1, 3, ]
+          1  1  0     <- [ 1, 2, ]
+          1  1  1     <- [ 1, 2, 3, ]
+
+- Nell'InsiemeOggetti per ottenere l'uguaglianza tra oggetti abbiamo sovrascritto il metodo equivale(), utilizzando per il confronto == (che testa l'indirizzo dell'oggetto) invece di equals.
+
+
+- Una Busta e' un multi insieme, ovvero un insieme che contiene elementi ognuno con una determinata molteplicita'. Per rappresentare gli elementi in una Busta utilizziamo una classe Elemento<T> privata all'interno della classe Busta<T>. Ogni oggetto Elemento<T> conterra' l'elemento T aggiunto e la sua molteplicita'.
+
+- La classe Vettore<T> fornisce metodi per l'inserimento e l'estrazione di elementi da una struttura accessibile tramite un indice;
+
+- La classe VettoreEstensibile<T> ha lo stesso comportamento di Vettore<T>, ma al contrario di quest'ultima non ha limiti di dimensione.
+
+- Matrice<T> e' una classe astratta che estende Vettore<T> ed e' la base per MatriceDensa<T> e MatriceSparsa<T>. In questa classe e' contenuto il metodo moltiplicazione() che esegue il prodotto di matrici, iterando tra tutti gli elementi delle due matrici ed utilizzando il metodo moltiplicazione() della classe Vettore<T> per generare uno scalare dalla moltiplicazione di due vettori (che in questo caso saranno le righe della prima matrice e le colonne della seconda).
+
+- La MatriceDensa<T> e' costruita come Vettore di Vettori in modo che ogni elemento sia accessibile tramite due indici.
+
+- La MatriceSparsa<T>, dovendo contenere solo pochi elementi, utilizza una classe privata interna Elemento<T> per la rappresentazione degli elementi. Gli altri non inseriti sono autmaticamente rappresentati come l'elemento vuoto di un determinato tipo (es: 0 nel caso di Integer, "" nel caso di stringhe). L'elemento vuoto viene passato al costruttore.
+
+Le classi Pila e Coda utilizzano CollezioneOrdninata per la loro struttura interna, ma non le estendono, altrimenti avrebbero a disposizione tutti i metodi della collezione, non rispettando le specifiche dell'ADT che ha un numero limitato di metodi.
+
+
+Ogni classe implementa adeguatamente i metodo equals(), toString() e lessOrEqual() che hanno un funzionamento ricosivo (ad es: funzionano anche per Vettori di vettori).
